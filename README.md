@@ -64,3 +64,7 @@ Opeth-Watershed-split-7.flac
 ```
 
 Then just use [Picard](https://picard.musicbrainz.org/) or your other favorite tagging tool to tag!
+
+# Helpful?
+
+If this was helpful, please consider [tipping](https://ko-fi.com/nhebert)!
