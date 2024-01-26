@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-$(dirname "${0}")/hcuesplitter ${@}
+bash $(dirname "${0}")/hcuesplitter ${@}
