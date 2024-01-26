@@ -1,0 +1,80 @@
+#!/usr/bin/env nix-shell
+#!nix-shell -i bash -p sox
+
+set -eEuo pipefail
+trap 'exit 1' INT
+
+dateCalc(){
+    # Pad hours iff missing
+    start="$(printf -- "${1}" | grep '.*:.*:' || printf -- "00:${1}")"
+    final="$(printf -- "${2}" | grep '.*:.*:' || printf -- "00:${2}")"
+    startDate=$(date -u -d "${start}" +"%s.%N")
+    finalDate=$(date -u -d "${final}" +"%s.%N")
+    date -u -d "0 $finalDate sec - $startDate sec" +"%H:%M:%S.%N" | sed 's/......$//' # trim to millis
+}
+
+split() {
+    local cueFile="${1}"
+    local inputFile="${2}"
+    local END="@END"
+    local splitname="$(basename "${inputFile}" | sed 's/\.[^\.]*$//')-split-"
+    local suffix="$(basename "${inputFile}" | sed 's/.*\.//' | tr '[:upper:]' '[:lower:]')"
+    # Quickly check the suffix is something familiar
+    # TODO: make this just reference what sox supports on the system
+    case "${suffix}" in "wav"|"flac"|"mp3"|"m4a"|"ogg"|"opus") ;; *) read -rp "Suffix '${suffix}' is unrecognized. Continue? (y/n)" </dev/tty; if [[ ${REPLY} != "y" ]]; then exit 1; fi; esac
+
+    local outDir="$(readlink -f "${3:-}")"
+    if [[ ! -z "${outDir}" && ! -d "${outDir}" ]]; then mkdir -p "${outDir}"; fi
+
+    unset current_index
+    unset last_index
+    count=0
+    while read line; do
+        current_index="$(printf -- "${line}" | tr -d '\r' | sed 's/INDEX .. //')"
+        if [[ "${line}" == "${END}" ]]; then
+            duration=
+        else
+            duration=$(dateCalc "${last_index:-00:00}" "${current_index}")
+        fi
+
+        if [[ -z ${REGENERATE_TRACK:+x} || ${count} -eq "${REGENERATE_TRACK}" ]]; then
+            if [[ ! -z "${REGENERATE_TRACK:+x}" ]]; then
+                printf -- "===\nRegenerating track ${count}\n==="
+            fi
+            sox "${inputFile}" "${outDir}${outDir:+/}${splitname}${count}.${suffix}" trim ${last_index:-00:00.000} ${duration}
+        else
+            printf -- "Skipping track ${count}\n"
+        fi
+
+        count=$((count + 1))
+        last_index=${current_index:-0}
+    done <<< $(printf -- "$(grep INDEX "${cueFile}")\n${END}\n")
+}
+
+usage(){
+    cat <<EOS
+Usage: $(basename "${0}") [--help|-h] CUE_FILE AUDIO_FILE [OUT_DIR]
+
+Options
+  -h|--help    Print this help and exit
+
+Takes the CUE_FILE to split the AUDIO_FILE and optionally deposits them in the OUT_DIR
+
+NOTE: The current version heartlessly clobbers existing *split* files, so do watch out for that.
+
+If you set REGENERATE_TRACK to a number, the script will regenerate only that track. Useful when manually debugging CUE values.
+EOS
+}
+
+main() {
+    if [[ ${1:-nil} == "--help" || ${1:-nil} == "-h" ]]; then
+        usage
+        exit 0
+    fi
+
+    split "${1:-${CUE_FILE:?ERR: arg#1 (cue file) missing}}" "${2:-${AUDIO_INFILE:?ERR: arg#2 (audio file) missing}}" "${3}"
+}
+
+main "${@}"
+
+# vim: set syntax=bash:
