@@ -31,7 +31,7 @@ If that sounds good, follow the build/install/usage instructions below!
 If you're using NixOS, none. The nix-shell shebang will take care of it for you.
 
 Otherwise:
-  - sox
+  - [sox](https://sourceforge.net/projects/sox/)
 
 ## Build
 It's just a bash-script, so you don't need to build it. Hallelujah.
