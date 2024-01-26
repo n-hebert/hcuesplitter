@@ -6,7 +6,7 @@ Audiophiles, rejoice!
 
 ## Why wouldn't I just use shntool?
 
-Firstly, I'll acknowledge that [http://shnutils.freeshell.org/shntool/](http://shnutils.freeshell.org/shntool/) is very popular for some reason. Even the venerable [Arch wiki](https://wiki.archlinux.org/title/CUE_Splitting) reads like it's the only game in town, so if shntool works for you, then absolutely have at it. Nothing to see here, and godspeed!
+Firstly, I'll acknowledge that [shntool](http://shnutils.freeshell.org/shntool/) is very popular for some reason. Even the venerable [Arch wiki](https://wiki.archlinux.org/title/CUE_Splitting) reads like it's the only game in town, so if shntool works for you, then absolutely have at it. Nothing to see here, and godspeed!
 
 Otherwise... well let's be honest, there's a billion cue-splitters online and shntool seems to be abandonware albeit its over-representation. It was last published almost fifteen years ago as of current writing (2009, march) and doesn't seem to handle my 24-bit or more-than-stereo audio files, even if I'm just using `.wav` files. I've seen patch notes claiming it does, but I get this annoying little message:
 ```
@@ -15,7 +15,7 @@ shnsplit: warning: unsupported format 0xfffe (Unknown) while processing file:
 
 So perhaps it only supports 24-bit WAV's if they are not [WAVE_FORMAT_EXTENSIBLE](https://mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html), but ultimately it's lacking.
 
-Regardless, the [CUE format](https://en.wikipedia.org/wiki/Cue_sheet_(computing) is /not/ very complex, and [sox](https://sourceforge.net/projects/sox/) is fantastic, so why bother stumbling over shntool when we can simply employ sox to do the good work?
+Regardless, the [CUE format](https://en.wikipedia.org/wiki/Cue_sheet_(computing)) is /not/ very complex, and [sox](https://sourceforge.net/projects/sox/) is fantastic, so why bother stumbling over shntool when we can simply employ sox to do the good work?
 
 If that sounds good, follow the build/install/usage instructions below!
 
